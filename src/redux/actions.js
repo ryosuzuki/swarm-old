@@ -5,6 +5,12 @@ let actions = {
       state: state
     }
   },
+  updateRobots: function(robots) {
+    return {
+      type: 'UPDATE_ROBOTS',
+      robots: robots
+    }
+  },
 }
 
 export default actions

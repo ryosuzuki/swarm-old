@@ -5,6 +5,10 @@ let reducer = function (state, action) {
       return Object.assign({}, state,
         action.state
       )
+    case 'UPDATE_ROBOTS':
+      return Object.assign({}, state, {
+        robots: action.robots
+      })
     default:
       return state
   }

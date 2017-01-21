@@ -5,18 +5,33 @@ import _ from 'lodash'
 import moment from 'moment'
 import actions from '../redux/actions'
 
+import Grid from './Grid'
+
 class App extends Component {
 
   componentDidMount() {
     window.app = this
     window.moment = moment
     window._ = _
+
+    this.initPosition()
+  }
+
+  initPosition() {
+    const robots = {
+      left: 100,
+      right: 100
+    }
+    this.props.store.dispatch(actions.updateRobots(robots))
   }
 
   render() {
     return (
       <div>
-        <h1>Hello World</h1>
+        <Grid app={ this }
+              robots={ this.props.robots }
+              store={ this.props.store }
+              actions={this.props.actions } />
       </div>
     )
   }

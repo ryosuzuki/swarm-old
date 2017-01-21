@@ -1,1 +1,17 @@
-style.css
+
+table {
+  position: relative;
+}
+
+td {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(34,36,38,.1);
+}
+
+.robot {
+  width: 15px;
+  height: 15px;
+  background: red;
+  position: absolute;
+}

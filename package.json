@@ -4,6 +4,7 @@
   "description": "Prototype to control micro swarm robots",
   "main": "index.js",
   "scripts": {
+    "start": "webpack --progress --colors --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
