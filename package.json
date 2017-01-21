@@ -2,9 +2,11 @@
   "name": "swarm",
   "version": "1.0.0",
   "description": "Prototype to control micro swarm robots",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "webpack --progress --colors --watch",
+    "start": "node server.js",
+    "build": "webpack --progress --colors",
+    "watch": "webpack --progress --colors --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
