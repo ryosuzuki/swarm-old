@@ -14,31 +14,39 @@ class App extends Component {
     window.moment = moment
     window._ = _
 
-    this.initPosition()
+    this.initRobots()
   }
 
-  initPosition() {
-    const robots = {
-      row: 8,
-      col: 8,
-      rotate: 0
+  initRobots() {
+    this.gridMax = 20
+    for (let i = 0; i < 10; i++) {
+      const id = i
+      const params = {
+        row: Math.floor(Math.random() * this.gridMax),
+        col: Math.floor(Math.random() * this.gridMax),
+        rotate: Math.floor(Math.random() * 3) * 90,
+      }
+      this.props.store.dispatch(actions.initRobot(params))
     }
-    this.props.store.dispatch(actions.updateRobots(robots))
   }
 
-  updatePosition(row, col) {
-    const robots = Object.assign({}, this.props.robots, {
+  updatePosition(id, row, col) {
+    const params = {
       row: row,
-      col: col,
-    })
-    this.props.store.dispatch(actions.updateRobots(robots))
+      col: col
+    }
+    this.props.store.dispatch(actions.updateRobot(id, params))
   }
 
-  updateRotate(rotate) {
-    const robots = Object.assign({}, this.props.robots, {
+  updateRotate(id, rotate) {
+    const params = {
       rotate: rotate
-    })
-    this.props.store.dispatch(actions.updateRobots(robots))
+    }
+    this.props.store.dispatch(actions.updateRobot(id, params))
+  }
+
+  updateCurrent(current) {
+    this.props.store.dispatch(actions.updateCurrent(current))
   }
 
   render() {
@@ -46,6 +54,7 @@ class App extends Component {
       <div>
         <Grid app={ this }
               robots={ this.props.robots }
+              current={ this.props.current }
               store={ this.props.store }
               actions={this.props.actions } />
       </div>

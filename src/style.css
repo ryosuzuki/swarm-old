@@ -9,10 +9,23 @@
 #main {
   width: 80%;
   float: left;
+  position: relative;
+}
+
+.robot {
+  width: 20px;
+  height: 20px;
+  background: red;
+  position: absolute;
+  border-right: 5px solid black;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  vertical-align: middle;
 }
 
 table {
-  position: relative;
 }
 
 td {
@@ -21,10 +34,3 @@ td {
   border: 1px solid rgba(34,36,38,.1);
 }
 
-.robot {
-  width: 16px;
-  height: 16px;
-  background: red;
-  position: absolute;
-  border-right: 5px solid blue;
-}

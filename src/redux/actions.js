@@ -1,3 +1,5 @@
+let nextId = 0
+
 let actions = {
   initState: function(state) {
     return {
@@ -5,10 +7,24 @@ let actions = {
       state: state
     }
   },
-  updateRobots: function(robots) {
+  initRobot: function(params) {
     return {
-      type: 'UPDATE_ROBOTS',
-      robots: robots
+      type: 'INIT_ROBOT',
+      id: nextId++,
+      params: params
+    }
+  },
+  updateRobot: function(id, params) {
+    return {
+      type: 'UPDATE_ROBOT',
+      id: parseInt(id),
+      params: params
+    }
+  },
+  updateCurrent: function(current) {
+    return {
+      type: 'UPDATE_CURRENT',
+      current: parseInt(current)
     }
   },
 }

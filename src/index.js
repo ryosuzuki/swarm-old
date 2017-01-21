@@ -5,7 +5,8 @@ import configureStore from './redux/store'
 import { Provider } from 'react-redux'
 
 let initialStore = {
-  robots: {}
+  robots: [],
+  current: 0
 }
 
 let store = configureStore(initialStore)
