@@ -1,4 +1,16 @@
 
+#sidebar {
+  width: 20%;
+  height: 100vh;
+  float: left;
+  padding: 20px;
+}
+
+#main {
+  width: 80%;
+  float: left;
+}
+
 table {
   position: relative;
 }
@@ -10,8 +22,9 @@ td {
 }
 
 .robot {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   background: red;
   position: absolute;
+  border-right: 5px solid blue;
 }
