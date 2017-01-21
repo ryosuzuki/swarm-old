@@ -24,7 +24,6 @@ class Grid extends Component {
     if (rotate === 270) {
       col = (col-1 >= 0) ? col-1 : col
     }
-    alert('fjweojwo')
     this.props.app.updatePosition(id, row, col)
   }
 
