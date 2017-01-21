@@ -6,9 +6,28 @@ class Grid extends Component {
   }
 
   forward() {
-    let left = this.props.robots.left
-    let right = this.props.robots.right
-    this.props.app.updatePosition(left+1, right)
+    let row = this.props.robots.row
+    let col = this.props.robots.col
+    const rotate = this.props.robots.rotate
+    if (rotate === 0) {
+      row = row+1
+    }
+    if (rotate === 90) {
+      col = col+1
+    }
+    if (rotate === 180) {
+      row = row-1
+    }
+    if (rotate === 270) {
+      col = col-1
+    }
+    this.props.app.updatePosition(row, col)
+  }
+
+  rotate() {
+    let rotate = this.props.robots.rotate
+    rotate = (rotate+90) % 360
+    this.props.app.updateRotate(rotate)
   }
 
   render() {
@@ -24,7 +43,7 @@ class Grid extends Component {
       <div>
         <div id="sidebar">
           <button className="ui basic button" onClick={ this.forward.bind(this) }>Forward</button>
-
+          <button className="ui basic button" onClick={ this.rotate.bind(this) }>Turn Right</button>
         </div>
         <div id="main">
           <table id="calendar" className="">
@@ -44,8 +63,9 @@ class Grid extends Component {
             </tbody>
 
             <div className="robot" style={{
-              'left' : `${unit * this.props.robots.left - margin}px`,
-              'top'  : `${unit * this.props.robots.right - margin}px`
+              'left' : `${unit * this.props.robots.row - margin}px`,
+              'top'  : `${unit * this.props.robots.col - margin}px`,
+              'transform': `rotate(${this.props.robots.rotate}deg)`
             }}></div>
           </table>
         </div>

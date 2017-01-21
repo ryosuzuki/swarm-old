@@ -19,17 +19,25 @@ class App extends Component {
 
   initPosition() {
     const robots = {
-      left: 8,
-      right: 8
+      row: 8,
+      col: 8,
+      rotate: 0
     }
     this.props.store.dispatch(actions.updateRobots(robots))
   }
 
-  updatePosition(left, right) {
-    const robots = {
-      left: left,
-      right: right
-    }
+  updatePosition(row, col) {
+    const robots = Object.assign({}, this.props.robots, {
+      row: row,
+      col: col,
+    })
+    this.props.store.dispatch(actions.updateRobots(robots))
+  }
+
+  updateRotate(rotate) {
+    const robots = Object.assign({}, this.props.robots, {
+      rotate: rotate
+    })
     this.props.store.dispatch(actions.updateRobots(robots))
   }
 
