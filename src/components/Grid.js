@@ -35,6 +35,11 @@ class Grid extends Component {
     this.props.app.updateRotate(id, rotate)
   }
 
+  init() {
+    const id = this.props.current
+    this.props.app.updateRotate(id, 0)
+  }
+
   move() {
     console.log(x)
     const id = this.props.current
@@ -48,11 +53,61 @@ class Grid extends Component {
     let mx = x - cx
     let my = y - cy
 
-    let array = []
+    let rows = []
     for (let i = 0; i < mx; i++) {
-      this.forward()
-      console.log(i)
+      rows.push(i)
     }
+    let cols = []
+    for (let i = 0; i < my; i++) {
+      cols.push(i)
+    }
+
+    let commands = []
+    commands.push('init')
+    for (let i = 0; i < mx; i++) {
+      commands.push('forward')
+    }
+    commands.push('rotate')
+    for (let i = 0; i < my; i++) {
+      commands.push('forward')
+    }
+
+
+    const wait = (command) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log(`command ${command}`)
+          if (command === 'init') {
+            this.init()
+          }
+          if (command === 'forward') {
+            this.forward()
+          }
+          if (command === 'rotate') {
+            this.rotate()
+          }
+          console.log(`finish ${command}`)
+          resolve()
+        }, 100)
+      })
+    }
+
+    commands.reduce((promise, command) => {
+      return promise.then(res => wait(command))
+    }, Promise.resolve())
+
+    // Promise.all([
+    //   moveRow(),
+    // ])
+    // .then(() => {
+    //   this.rotate()
+    // })
+    // .then(() => {
+    //   moveCol()
+    // })
+    // .then(() => {
+    //   console.log('finish')
+    // })
 
   }
 
