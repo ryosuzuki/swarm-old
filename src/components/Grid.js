@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import * as d3 from 'd3'
+import async from 'async'
 
 class Grid extends Component {
 
@@ -33,6 +34,28 @@ class Grid extends Component {
     rotate = (rotate+90) % 360
     this.props.app.updateRotate(id, rotate)
   }
+
+  move() {
+    console.log(x)
+    const id = this.props.current
+
+    let x = 20
+    let y = 20
+
+    let cx = this.props.robots[id].row
+    let cy = this.props.robots[id].col
+
+    let mx = x - cx
+    let my = y - cy
+
+    let array = []
+    for (let i = 0; i < mx; i++) {
+      this.forward()
+      console.log(i)
+    }
+
+  }
+
 
   changeTarget(event) {
     const current = parseInt(event.target.value)
@@ -68,6 +91,7 @@ class Grid extends Component {
           <br />
           <button className="ui basic button" onClick={ this.forward.bind(this) }>Forward</button>
           <button className="ui basic button" onClick={ this.rotate.bind(this) }>Turn Right</button>
+          <button className="ui basic button" onClick={ this.move.bind(this) }>Move</button>
         </div>
         <div id="main">
           { this.props.robots.map((robot) => {
