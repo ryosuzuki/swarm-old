@@ -9,21 +9,11 @@ class Grid extends Component {
   componentDidMount() {
     window.d3 = d3
 
-    // const canvas = document.getElementById('canvas');
-    // const context = canvas.getContext('2d');
-    // canvas.width = $('#canvas').innerWidth()
-    // canvas.height = $('#canvas').innerWidth()
-    // const centerX = canvas.width / 2;
-    // const centerY = canvas.height / 2;
-    // const radius = 70;
-    // context.beginPath();
-    // context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-    // context.fillStyle = 'green';
-    // context.fill()
-    // context.strokeStyle = '#000';
-    // context.lineWidth = 5;
-    // context.strokeStyle = '#000';
-    // context.stroke();
+    this.canvas = document.getElementById('canvas');
+    this.canvas.width = $('#canvas').innerWidth()
+    this.canvas.height = $('#canvas').innerWidth()
+
+    this.changeForm('smile')
   }
 
   forward(id) {
@@ -47,12 +37,14 @@ class Grid extends Component {
   }
 
   rotate(id) {
+    if (!id) id = this.props.current
     let rotate = this.props.robots[id].rotate
     rotate = (rotate+90) % 360
     this.props.app.updateRotate(id, rotate)
   }
 
   direct(id, angle = 0) {
+    if (!id) id = this.props.current
     let rotate = this.props.robots[id].rotate
     rotate = angle % 360
     this.props.app.updateRotate(id, rotate)
@@ -102,6 +94,13 @@ class Grid extends Component {
   }
 
   form() {
+    const row = 20
+    const col = 20
+    const bitmap = document.getElementById('bitmap');
+    const mini = bitmap.getContext("2d");
+    mini.clearRect(0, 0, bitmap.width, bitmap.height);
+    mini.drawImage(this.canvas, 0, 0, row, col)
+
     var imageData = mini.getImageData(0, 0, row, col)
     let data = imageData.data
     let array = []
@@ -144,9 +143,61 @@ class Grid extends Component {
     }
   }
 
+  click(type) {
+    if (type === 'forward') {
+      this.forward()
+    }
+    if (type === 'rotate') {
+      this.rotate()
+    }
+  }
+
   changeTarget(event) {
     const current = parseInt(event.target.value)
     this.props.app.updateCurrent(current)
+  }
+
+  changeForm(type) {
+    const context = this.canvas.getContext('2d');
+    const width = this.canvas.width
+    const center = width / 2;
+    const radius = width / 3;
+    const start = center - (radius)
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (type === 'rect') {
+      context.beginPath();
+      context.rect(start, start, radius*2, radius*2)
+      context.strokeStyle = '#000';
+      context.stroke();
+    }
+    if (type === 'circle') {
+      context.beginPath();
+      context.arc(center, center, radius, 0, 2 * Math.PI, false);
+      context.lineWidth = 5;
+      context.strokeStyle = '#000';
+      context.stroke();
+    }
+    if (type === 'smile') {
+      context.beginPath();
+      // Outer circle
+      context.arc(center, center, radius, 0, Math.PI*2,true);
+      // Mouth (clockwise)
+      context.moveTo(center+width/6, center+5);
+      context.arc(center, center+5, width/6, 0, Math.PI, false);
+      // Left eye
+      const left = center-width/8
+      context.moveTo(left-2, center-width/8);
+      context.arc(left, center-width/8, 2, 0, Math.PI*2, true);
+      // Right eye
+      const right = center+width/8
+      context.moveTo(right-2, center-width/8);
+      context.arc(right, center-width/8, 2, 0, Math.PI*2, true);
+      context.lineWidth = 3;
+      context.strokeStyle = '#000';
+      context.stroke();
+    }
+
   }
 
   render() {
@@ -176,13 +227,23 @@ class Grid extends Component {
             </div>
           </form>
           <br />
-          {/*
-          <button className="ui basic button" onClick={ this.forward.bind(this) }>Forward</button>
-          <button className="ui basic button" onClick={ this.rotate.bind(this) }>Turn Right</button>
-          */}
+          <button className="ui basic button" onClick={ this.click.bind(this, 'forward') }>Forward</button>
+          <button className="ui basic button" onClick={ this.click.bind(this, 'rotate') }>Turn Right</button>
           <button className="ui basic button" onClick={ this.form.bind(this) }>Form</button>
-          <canvas id="canvas" style={{ 'width' : '100%', 'margin-top' : '20px' }}></canvas>
+          <ul>
+            <li>
+              <a href="#" onClick={ this.changeForm.bind(this, 'smile') }>Smile</a>
+            </li>
+            <li>
+              <a href="#" onClick={ this.changeForm.bind(this, 'circle') }>Circle</a>
+            </li>
+            <li>
+              <a href="#" onClick={ this.changeForm.bind(this, 'rect') }>Rectangle</a>
+            </li>
+          </ul>
+          <canvas id="canvas" style={{ 'width' : '160px', 'margin-top' : '20px' }}></canvas>
           <canvas id="bitmap" style={{ 'width' : '100%', 'margin-top' : '20px' }}></canvas>
+
         </div>
         <div id="main">
           { this.props.robots.map((robot) => {
