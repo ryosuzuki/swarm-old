@@ -8,58 +8,6 @@ class Grid extends Component {
 
   componentDidMount() {
     window.d3 = d3
-
-    var image = new Image()
-    var canvas = $('#canvas')[0]
-    var context = canvas.getContext("2d");
-
-    image.onload = () => {
-      const row = 10
-      let width = row
-      let height = image.height / image.width * row
-
-      canvas.width = image.width
-      canvas.height = image.height
-      context.drawImage(image, 0, 0, width, height);
-
-      var imageData = context.getImageData(0, 0, width, height)
-
-      let data = imageData.data
-      let array = []
-      for (let i = 0; i < data.length; i += 4) {
-        let r = data[i]
-        let g = data[i + 1]
-        let b = data[i + 2]
-        let a = data[i + 3] / 255
-        array.push({ r: r, g: g, b: b, a: a })
-      }
-
-
-      let y = -1
-      let positions = array.map((color, index) => {
-        let val = (color.r + color.g + color.b) / 3
-        let x = index % width
-        if (x === 0) y++
-        if (val === 255) {
-          return { x: x, y: y, val: val }
-        }
-      })
-      positions = positions.filter(pos => pos)
-      window.positions = positions
-      window.array = array
-
-      console.log('start')
-      // this.move(1, 20, 20)
-      // this.move(6, 20, 20)
-      // this.move(3, 20, 1)
-      for (let i = 0; i < positions.length; i++) {
-        let pos = positions[i]
-        // this.move(i, pos.x, pos.y)
-      }
-    }
-
-    image.src = "/circle.png";
-
   }
 
   start(event) {
@@ -139,10 +87,59 @@ class Grid extends Component {
     }
 
     run()
+  }
 
-    // commands.reduce((promise, command) => {
-    //   return promise.then(res => wait(command))
-    // }, Promise.resolve())
+  form() {
+    var image = new Image()
+    var canvas = $('#canvas')[0]
+    var context = canvas.getContext("2d");
+
+    image.onload = () => {
+      const row = 10
+      let width = row
+      let height = image.height / image.width * row
+
+      canvas.width = image.width
+      canvas.height = image.height
+      context.drawImage(image, 0, 0, width, height);
+
+      var imageData = context.getImageData(0, 0, width, height)
+
+      let data = imageData.data
+      let array = []
+      for (let i = 0; i < data.length; i += 4) {
+        let r = data[i]
+        let g = data[i + 1]
+        let b = data[i + 2]
+        let a = data[i + 3] / 255
+        array.push({ r: r, g: g, b: b, a: a })
+      }
+
+
+      let y = -1
+      let positions = array.map((color, index) => {
+        let val = (color.r + color.g + color.b) / 3
+        let x = index % width
+        if (x === 0) y++
+        if (val === 0) {
+          return { x: x, y: y, val: val }
+        }
+      })
+      positions = positions.filter(pos => pos)
+      window.positions = positions
+      window.array = array
+
+      console.log('start')
+      // this.move(1, 20, 20)
+      // this.move(6, 20, 20)
+      // this.move(3, 20, 1)
+      for (let i = 0; i < positions.length; i++) {
+        let pos = positions[i]
+        this.move(i, pos.x, pos.y)
+      }
+    }
+
+    image.src = "/circle.png";
   }
 
   changeTarget(event) {
@@ -181,7 +178,7 @@ class Grid extends Component {
           <button className="ui basic button" onClick={ this.forward.bind(this) }>Forward</button>
           <button className="ui basic button" onClick={ this.rotate.bind(this) }>Turn Right</button>
           */}
-          <button className="ui basic button" onClick={ this.start.bind(this) }>Move</button>
+          <button className="ui basic button" onClick={ this.form.bind(this) }>Form</button>
           <img src="/circle.png" style={{ 'width' : '100%', 'margin-top' : '20px' }}/>
           <canvas id="canvas"></canvas>
         </div>
