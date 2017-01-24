@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import * as d3 from 'd3'
 import async from 'async'
 import 'babel-polyfill'
+import Jimp from 'jimp'
 
 class Grid extends Component {
 
@@ -9,8 +10,40 @@ class Grid extends Component {
     window.d3 = d3
   }
 
-  forward() {
-    const id = this.props.current
+  start(event) {
+    this.fuga()
+  }
+
+  fuga() {
+    const path = '/circle.png'
+    Jimp.read(path, (err, img) => {
+      if (err) throw err
+      img.resize(10, 10)
+      .greyscale()
+
+      var hoge = img.clone()
+      const width = img.bitmap.width
+      const height = img.bitmap.height
+
+      let array = []
+      hoge.scan(0, 0, width, height, function(x, y, idx) {
+        let r = this.bitmap.data[idx + 0]
+        let g = this.bitmap.data[idx + 1]
+        let b = this.bitmap.data[idx + 2]
+        let a = this.bitmap.data[idx + 3]
+
+        let value = (r + g + b) / 3
+        if (value > 250) {
+          array.push({ x: x, y: y, value: value })
+        }
+      })
+      console.log(array.length)
+    })
+  }
+
+
+  forward(id) {
+    if (!id) id = this.props.current
     let row = this.props.robots[id].row
     let col = this.props.robots[id].col
     const rotate = this.props.robots[id].rotate
@@ -29,91 +62,59 @@ class Grid extends Component {
     this.props.app.updatePosition(id, row, col)
   }
 
-  rotate() {
-    const id = this.props.current
+  rotate(id) {
+    if (!id) id = this.props.current
     let rotate = this.props.robots[id].rotate
     rotate = (rotate+90) % 360
     this.props.app.updateRotate(id, rotate)
   }
 
-  init() {
-    const id = this.props.current
+  init(id) {
+    if (!id) id = this.props.current
     this.props.app.updateRotate(id, 0)
   }
 
-  move() {
-    console.log(x)
-    const id = this.props.current
+  move(id, dx, dy) {
+    id = id || 3 //this.props.current
 
-    let x = 20
-    let y = 20
-
+    dx = dx || 20
+    dy = dy || 20
     let cx = this.props.robots[id].row
     let cy = this.props.robots[id].col
 
-    let mx = x - cx
-    let my = y - cy
+    let rows = [...Array(dx-cx).keys()]
+    let cols = [...Array(dy-cy).keys()]
 
-    let rows = []
-    for (let i = 0; i < mx; i++) {
-      rows.push(i)
-    }
-    let cols = []
-    for (let i = 0; i < my; i++) {
-      cols.push(i)
-    }
-
-    let commands = []
-    commands.push('init')
-    for (let i = 0; i < mx; i++) {
-      commands.push('forward')
-    }
-    commands.push('rotate')
-    for (let i = 0; i < my; i++) {
-      commands.push('forward')
-    }
-
-    const wait = (command) => {
+    const command = (type, id) => {
       return new Promise((resolve) => {
         setTimeout(() => {
-          console.log(`command ${command}`)
-          if (command === 'init') {
-            this.init()
-          }
-          if (command === 'forward') {
-            this.forward()
-          }
-          if (command === 'rotate') {
-            this.rotate()
-          }
-          console.log(`finish ${command}`)
+          console.log(`command ${type}`)
+          if (type === 'init') this.init(id)
+          if (type === 'forward') this.forward(id)
+          if (type === 'rotate') this.rotate(id)
+          console.log(`finish ${type}`)
           resolve()
         }, 100)
       })
     }
 
     const run = async () => {
-      await wait('init')
+      await command('init', id)
       for (let row of rows) {
-        await wait('forward')
+        await command('forward', id)
       }
-      await wait('rotate')
+      await command('rotate', id)
       for (let col of cols) {
-        await wait('forward')
+        await command('forward', id)
       }
     }
 
     run()
 
-
-    // run()
-
     // commands.reduce((promise, command) => {
     //   return promise.then(res => wait(command))
     // }, Promise.resolve())
-
   }
-
 
   changeTarget(event) {
     const current = parseInt(event.target.value)
@@ -147,9 +148,11 @@ class Grid extends Component {
             </div>
           </form>
           <br />
+          {/*
           <button className="ui basic button" onClick={ this.forward.bind(this) }>Forward</button>
           <button className="ui basic button" onClick={ this.rotate.bind(this) }>Turn Right</button>
-          <button className="ui basic button" onClick={ this.move.bind(this) }>Move</button>
+          */}
+          <button className="ui basic button" onClick={ this.start.bind(this) }>Move</button>
         </div>
         <div id="main">
           { this.props.robots.map((robot) => {
