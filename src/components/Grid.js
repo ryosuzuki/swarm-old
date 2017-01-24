@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import * as d3 from 'd3'
 import async from 'async'
+import 'babel-polyfill'
 
 class Grid extends Component {
 
@@ -72,7 +73,6 @@ class Grid extends Component {
       commands.push('forward')
     }
 
-
     const wait = (command) => {
       return new Promise((resolve) => {
         setTimeout(() => {
@@ -92,22 +92,25 @@ class Grid extends Component {
       })
     }
 
-    commands.reduce((promise, command) => {
-      return promise.then(res => wait(command))
-    }, Promise.resolve())
+    const run = async () => {
+      await wait('init')
+      for (let row of rows) {
+        await wait('forward')
+      }
+      await wait('rotate')
+      for (let col of cols) {
+        await wait('forward')
+      }
+    }
 
-    // Promise.all([
-    //   moveRow(),
-    // ])
-    // .then(() => {
-    //   this.rotate()
-    // })
-    // .then(() => {
-    //   moveCol()
-    // })
-    // .then(() => {
-    //   console.log('finish')
-    // })
+    run()
+
+
+    // run()
+
+    // commands.reduce((promise, command) => {
+    //   return promise.then(res => wait(command))
+    // }, Promise.resolve())
 
   }
 
