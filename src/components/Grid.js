@@ -8,39 +8,63 @@ class Grid extends Component {
 
   componentDidMount() {
     window.d3 = d3
+
+    var image = new Image()
+    var canvas = $('#canvas')[0]
+    var context = canvas.getContext("2d");
+
+    image.onload = () => {
+      const row = 10
+      let width = row
+      let height = image.height / image.width * row
+
+      canvas.width = image.width
+      canvas.height = image.height
+      context.drawImage(image, 0, 0, width, height);
+
+      var imageData = context.getImageData(0, 0, width, height)
+
+      let data = imageData.data
+      let array = []
+      for (let i = 0; i < data.length; i += 4) {
+        let r = data[i]
+        let g = data[i + 1]
+        let b = data[i + 2]
+        let a = data[i + 3] / 255
+        array.push({ r: r, g: g, b: b, a: a })
+      }
+
+
+      let y = -1
+      let positions = array.map((color, index) => {
+        let val = (color.r + color.g + color.b) / 3
+        let x = index % width
+        if (x === 0) y++
+        if (val === 255) {
+          return { x: x, y: y, val: val }
+        }
+      })
+      positions = positions.filter(pos => pos)
+      window.positions = positions
+      window.array = array
+
+      console.log('start')
+      // this.move(1, 20, 20)
+      // this.move(6, 20, 20)
+      // this.move(3, 20, 1)
+      for (let i = 0; i < positions.length; i++) {
+        let pos = positions[i]
+        // this.move(i, pos.x, pos.y)
+      }
+    }
+
+    image.src = "/circle.png";
+
   }
 
   start(event) {
     this.fuga()
   }
-
-  fuga() {
-    const path = '/circle.png'
-    Jimp.read(path, (err, img) => {
-      if (err) throw err
-      img.resize(10, 10)
-      .greyscale()
-
-      var hoge = img.clone()
-      const width = img.bitmap.width
-      const height = img.bitmap.height
-
-      let array = []
-      hoge.scan(0, 0, width, height, function(x, y, idx) {
-        let r = this.bitmap.data[idx + 0]
-        let g = this.bitmap.data[idx + 1]
-        let b = this.bitmap.data[idx + 2]
-        let a = this.bitmap.data[idx + 3]
-
-        let value = (r + g + b) / 3
-        if (value > 250) {
-          array.push({ x: x, y: y, value: value })
-        }
-      })
-      console.log(array.length)
-    })
-  }
-
 
   forward(id) {
     if (!id) id = this.props.current
@@ -63,9 +87,14 @@ class Grid extends Component {
   }
 
   rotate(id) {
-    if (!id) id = this.props.current
     let rotate = this.props.robots[id].rotate
     rotate = (rotate+90) % 360
+    this.props.app.updateRotate(id, rotate)
+  }
+
+  direct(id, angle = 0) {
+    let rotate = this.props.robots[id].rotate
+    rotate = angle % 360
     this.props.app.updateRotate(id, rotate)
   }
 
@@ -75,23 +104,23 @@ class Grid extends Component {
   }
 
   move(id, dx, dy) {
-    id = id || 3 //this.props.current
-
-    dx = dx || 20
-    dy = dy || 20
     let cx = this.props.robots[id].row
     let cy = this.props.robots[id].col
 
-    let rows = [...Array(dx-cx).keys()]
-    let cols = [...Array(dy-cy).keys()]
+    let x = Math.abs(dx-cx)
+    let y = Math.abs(dy-cy)
+    let ax = (dx-cx >= 0) ? 0 : 180
+    let ay = (dy-cy >= 0) ? 90 : 270
 
-    const command = (type, id) => {
+    let rows = [...Array(x).keys()]
+    let cols = [...Array(y).keys()]
+
+    const command = (type, id, angle) => {
       return new Promise((resolve) => {
         setTimeout(() => {
           console.log(`command ${type}`)
-          if (type === 'init') this.init(id)
+          if (type === 'direct') this.direct(id, angle)
           if (type === 'forward') this.forward(id)
-          if (type === 'rotate') this.rotate(id)
           console.log(`finish ${type}`)
           resolve()
         }, 100)
@@ -99,11 +128,11 @@ class Grid extends Component {
     }
 
     const run = async () => {
-      await command('init', id)
+      await command('direct', id, ax)
       for (let row of rows) {
         await command('forward', id)
       }
-      await command('rotate', id)
+      await command('direct', id, ay)
       for (let col of cols) {
         await command('forward', id)
       }
@@ -153,10 +182,12 @@ class Grid extends Component {
           <button className="ui basic button" onClick={ this.rotate.bind(this) }>Turn Right</button>
           */}
           <button className="ui basic button" onClick={ this.start.bind(this) }>Move</button>
+          <img src="/circle.png" style={{ 'width' : '100%', 'margin-top' : '20px' }}/>
+          <canvas id="canvas"></canvas>
         </div>
         <div id="main">
           { this.props.robots.map((robot) => {
-            let color = d3.schemeCategory20b[robot.id]
+            let color = d3.schemeCategory20b[robot.id%20]
             if (this.props.current === robot.id) {
               color = 'red'
             }

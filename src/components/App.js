@@ -19,7 +19,7 @@ class App extends Component {
 
   initRobots() {
     this.gridMax = 20
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 50; i++) {
       const id = i
       const params = {
         row: Math.floor(Math.random() * this.gridMax),
