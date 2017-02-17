@@ -2,35 +2,52 @@ var webpack = require('webpack')
 var path = require('path')
 
 module.exports = {
-  devtool: 'inline-source-map',
-  entry: [
-    // 'webpack-hot-middleware/client',
-    './src/index.js'
-  ],
+  devtool: 'eval',
+  entry: {
+    bundle: path.join(__dirname, '/src/index.js'),
+  },
   output: {
-    path: './dist',
+    path: path.join(__dirname, '/'),
     filename: 'bundle.js',
-    publicPath: '/public'
+    publicPath: '/'
   },
   plugins: [
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    // new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
+    })
   ],
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         loader: 'babel-loader',
         exclude: /node_modules/,
-        query: {
-          presets: ['react', 'es2015', 'stage-3']
+        options: {
+          presets: ['react', 'es2015', 'stage-3', 'stage-0']
         }
       }, {
-        test: /\.json$/,
-        loader: 'json-loader'
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader'
+        ]
+      }, {
+        test: /\.html$/,
+        loader: 'html-loader',
       }
     ]
+  },
+  devServer: {
+    contentBase: '.',
+    watchContentBase: true,
+    publicPath: '/',
+    compress: true,
+    hot: true,
+    inline: true,
+    port: 8080
   },
   node: {
     fs: 'empty',
