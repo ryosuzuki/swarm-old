@@ -241,8 +241,8 @@ class Grid extends Component {
               <a href="#" onClick={ this.changeForm.bind(this, 'rect') }>Rectangle</a>
             </li>
           </ul>
-          <canvas id="canvas" style={{ 'width' : '160px', 'margin-top' : '20px' }}></canvas>
-          <canvas id="bitmap" style={{ 'width' : '100%', 'margin-top' : '20px' }}></canvas>
+          <canvas id="canvas" style={{ 'width' : '160px', 'marginTop' : '20px' }}></canvas>
+          <canvas id="bitmap" style={{ 'width' : '100%', 'marginTop' : '20px' }}></canvas>
 
         </div>
         <div id="main">
